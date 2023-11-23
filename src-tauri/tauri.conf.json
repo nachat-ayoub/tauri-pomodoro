@@ -11,13 +11,24 @@
   },
   "tauri": {
     "allowlist": {
+      "all": false,
       "notification": {
         "all": true
       },
       "dialog": {
         "all": true
       },
-      "all": false,
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$APPDATA/*",
+          "$APPDATA/config/*",
+          "$APPDATA/config/settings.json"
+        ]
+      },
       "shell": {
         "all": false,
         "open": true
