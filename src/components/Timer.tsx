@@ -1,14 +1,19 @@
 import Progress from 'react-circle-progress-bar';
 import React, { useEffect, useState } from 'react';
-import useSound from '../hooks/useSound';
+import useSound from '../hooks/useAudio';
 import useStateRef from 'react-usestateref';
 import BasicButton from './BasicButton';
 import {
+  IconBriefcase,
+  IconLeaf,
+  IconMug,
   IconPlayerPauseFilled,
   IconPlayerPlayFilled,
   IconRotateClockwise,
 } from '@tabler/icons-react';
 import useStore from '../hooks/useStore';
+import useWorkSessions from '../hooks/useWorkSessions';
+import useAudio from '../hooks/useAudio';
 
 // import settings from '../settings.json';
 
@@ -16,22 +21,25 @@ import useStore from '../hooks/useStore';
 //   totalTime?: number; //* in seconds s
 // };
 
+type SessionState = 'work' | 'break' | 'longBreak';
+
 const Timer: React.FC = () => {
+  const selectedProfile = useStore((state) => state.selectedProfile);
   const {
     doneSessions,
-    selectedProfile,
+    doneSessionsRef,
     initDoneSessions,
     incrementDoneSessions,
-  } = useStore();
+  } = useWorkSessions();
+
   const [totalTime, setTotalTime] = useStateRef(selectedProfile.workTime * 60);
   const [timeLeft, setTimeLeft, timeLeftRef] = useStateRef(
     selectedProfile.workTime * 60
   );
 
   const [isPaused, setIsPaused, isPausedRef] = useStateRef(true);
-  const [timeState, setTimeState, timeStateRef] = useStateRef<
-    'work' | 'break' | 'longBreak'
-  >('work');
+  const [timeState, setTimeState, timeStateRef] =
+    useStateRef<SessionState>('work');
 
   useEffect(() => {
     if (selectedProfile) {
@@ -40,27 +48,31 @@ const Timer: React.FC = () => {
     }
   }, [selectedProfile]);
 
-  // const AlarmSound = useSound('/assets/alarm-wood.mp3');
-
+  const AlarmSound = useAudio('/assets/alarm-wood.mp3');
   function timeOver(muteAlarm = false) {
     if (!muteAlarm) {
-      // AlarmSound.play();
+      AlarmSound.play();
     }
-
     //* check if workSessions exceded if no increment it if yes change state to longBreak
     if (timeStateRef.current === 'longBreak') {
-      //* TODO: send a notification to the user if he want to restart the whole profile session
-      const restartSession = true;
+      // TODO: send a notification to the user if he want to restart the whole profile session
+      alert('Session Ended');
+      resetTimer();
+      const restartSession = false;
       if (restartSession) {
         setTimeState('work');
         initDoneSessions();
       }
-    } else if (doneSessions < selectedProfile.workSessions) {
+    } else if (doneSessionsRef.current < selectedProfile.workSessions) {
       const isWorkTime = timeStateRef.current === 'work';
-      if (isWorkTime) incrementDoneSessions();
+      if (isWorkTime) {
+        incrementDoneSessions();
 
+        console.log({ doneSessions: doneSessionsRef.current });
+      }
       // TODO: check if it's last work session
-      if (doneSessions === selectedProfile.workSessions) {
+      if (doneSessionsRef.current === selectedProfile.workSessions) {
+        alert('Last Session!!');
         setTimeState('longBreak');
       } else {
         setTimeState(isWorkTime ? 'break' : 'work');
@@ -83,17 +95,23 @@ const Timer: React.FC = () => {
         clearInterval(interval);
       } else if (timeLeftRef.current > 0) {
         // update time
-        setTimeLeft(timeLeftRef.current - 1);
+        let currTime = timeLeftRef.current - 1;
+        currTime = currTime < 0 ? 0 : currTime;
+        setTimeLeft(currTime);
       } else {
         // time over
         timeOver();
         clearInterval(interval);
       }
-    }, 5);
+    }, 800);
   }, [isPaused, timeState]);
 
   function resetTimer() {
-    // TODO: reset timer for the current session (work, break, long break)
+    // TODO: reset timer to the 1st work session
+    setIsPaused(true);
+    initDoneSessions();
+    setTimeState('work');
+    initTimer();
   }
 
   function unPauseTimer() {
@@ -105,8 +123,14 @@ const Timer: React.FC = () => {
   }
 
   const minutesText = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  const seconds = Math.floor(timeLeft % 60);
   const secondsText = seconds < 10 ? '0' + seconds : seconds;
+
+  const sessionsIcons: Record<SessionState, JSX.Element> = {
+    work: <IconBriefcase size={20} />,
+    break: <IconMug size={20} />,
+    longBreak: <IconLeaf size={20} />,
+  };
 
   return (
     <>
@@ -142,16 +166,19 @@ const Timer: React.FC = () => {
           hideValue
         />
 
-        <div className='absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl text-center font-semibold dark:text-[#f1f1f1b3] text-gray-600 w-3/4'>
-          <p>
+        <div className='absolute z-10 w-3/4 text-4xl font-semibold text-center text-gray-600 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 dark:text-gray-400'>
+          <p className='mb-1'>
             {minutesText}:{secondsText}
           </p>
-          <p className='text-2xl tracking-wider'>{timeState}</p>
+          <p className='flex items-center justify-center gap-1 mt-1 text-lg tracking-wider capitalize dark:text-gray-500'>
+            <span>{sessionsIcons[timeState]}</span>
+            <span>{timeState == 'longBreak' ? 'long break' : timeState}</span>
+          </p>
         </div>
       </div>
       <div className='flex items-center justify-center gap-x-4'>
         <BasicButton
-          className='mt-6 border-2 rounded-full dark:border-gray-500'
+          className='mt-6 border-2 border-gray-500 rounded-full'
           onClick={resetTimer}
         >
           <IconRotateClockwise size={35} />
@@ -159,14 +186,14 @@ const Timer: React.FC = () => {
 
         {isPaused ? (
           <BasicButton
-            className='mt-6 border-2 rounded-full dark:border-gray-500'
+            className='mt-6 border-2 border-gray-500 rounded-full'
             onClick={unPauseTimer}
           >
             <IconPlayerPlayFilled size={35} />
           </BasicButton>
         ) : (
           <BasicButton
-            className='mt-6 border-2 rounded-full dark:border-gray-500'
+            className='mt-6 border-2 border-gray-500 rounded-full'
             onClick={pauseTimer}
           >
             <IconPlayerPauseFilled size={35} />

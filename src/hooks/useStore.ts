@@ -15,28 +15,18 @@ export interface Profile {
 export interface IStoreState {
   profiles: Profile[];
   selectedProfile: Profile;
-  doneSessions: number;
   setProfiles: (profiles: Profile[]) => void;
   addProfile: (newProfile: Profile) => void;
   updateProfile: (updatedProfile: Profile) => void;
   removeProfile: (profileName: string) => void;
   selectProfile: (profileName: string) => void;
   saveData: (state: IStoreState) => void;
-  initDoneSessions: () => void;
-  incrementDoneSessions: () => void;
 }
 
 const useStore = create<IStoreState>()(
   devtools((set) => ({
     selectedProfile: defaultSettings[0],
     profiles: defaultSettings,
-    doneSessions: 0,
-    initDoneSessions: () => {
-      set(() => ({ doneSessions: 0 }));
-    },
-    incrementDoneSessions: () => {
-      set((state) => ({ doneSessions: state.doneSessions + 1 }));
-    },
 
     setProfiles: (profiles: Profile[]) => {
       set(() => ({ profiles }), false, 'setProfiles');
