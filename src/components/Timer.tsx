@@ -1,6 +1,8 @@
 import { sendNotification } from '@tauri-apps/api/notification';
+import { ask } from '@tauri-apps/api/dialog';
 
 import useWorkSessions from '../hooks/useWorkSessions';
+import { formatDuration } from '../utils/helpers';
 import Progress from 'react-circle-progress-bar';
 import useStateRef from 'react-usestateref';
 import React, { useEffect } from 'react';
@@ -44,42 +46,48 @@ const Timer: React.FC = () => {
   }, [selectedProfile]);
 
   const AlarmSound = useAudio('/assets/alarm-wood.mp3');
-  function timeOver(muteAlarm = false) {
+  async function timeOver(muteAlarm = false) {
     if (!muteAlarm) {
       AlarmSound.play();
     }
     //* check if workSessions exceded if no increment it if yes change state to longBreak
     if (timeStateRef.current === 'longBreak') {
-      // TODO: send a notification to the user if he want to restart the whole profile session
-      sendNotification({
-        title: 'Tauri Pomodoro',
-        body: 'Session Ended!, resart the session?',
-      });
-
       resetTimer();
-      const restartSession = false;
+
+      // TODO: send a notification to the user if he want to restart the whole profile session
+      const restartSession = await ask(
+        'Session ended!, do you want to restart the session?',
+        {
+          title: 'Tauri Pomodoro',
+          type: 'warning',
+        }
+      );
+
       if (restartSession) {
         setTimeState('work');
         initDoneSessions();
+        setIsPaused(false);
       }
     } else if (doneSessionsRef.current < selectedProfile.workSessions) {
       const isWorkTime = timeStateRef.current === 'work';
       if (isWorkTime) {
         incrementDoneSessions();
       }
-      // TODO: check if it's last work session
+      //* check if it's last work session
       if (doneSessionsRef.current === selectedProfile.workSessions) {
         setTimeState('longBreak');
 
         sendNotification({
           title: 'Tauri Pomodoro',
-          body: `Take a ${selectedProfile.longBreakTime}min break!`,
+          body: `Take a ${formatDuration(
+            selectedProfile.longBreakTime
+          )} long break!`,
         });
       } else {
         setTimeState(isWorkTime ? 'break' : 'work');
-        let message = isWorkTime
+        let message = !isWorkTime
           ? 'Get back to work and focus!'
-          : `Take a ${selectedProfile.breakTime}min break!`;
+          : `Take a ${formatDuration(selectedProfile.breakTime)} break!`;
 
         sendNotification({
           title: 'Tauri Pomodoro',
@@ -98,7 +106,7 @@ const Timer: React.FC = () => {
   }
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       if (isPausedRef.current) {
         // if time paused
         clearInterval(interval);
@@ -109,7 +117,7 @@ const Timer: React.FC = () => {
         setTimeLeft(currTime);
       } else {
         // time over
-        timeOver();
+        await timeOver();
         clearInterval(interval);
       }
     }, 800);
