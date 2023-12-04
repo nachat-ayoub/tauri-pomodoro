@@ -1,9 +1,8 @@
 import { sendNotification } from '@tauri-apps/api/notification';
-import { ask } from '@tauri-apps/api/dialog';
-
 import useWorkSessions from '../hooks/useWorkSessions';
 import { formatDuration } from '../utils/helpers';
 import Progress from 'react-circle-progress-bar';
+import { ask } from '@tauri-apps/api/dialog';
 import useStateRef from 'react-usestateref';
 import React, { useEffect } from 'react';
 import useStore from '../hooks/useStore';
@@ -151,7 +150,7 @@ const Timer: React.FC = () => {
 
   return (
     <>
-      <h2 className='mb-6 text-2xl font-semibold text-gray-700 dark:text-gray-500'>
+      <h2 className='mb-6 text-2xl font-semibold'>
         {doneSessions}/{selectedProfile.workSessions} Work Sessions
       </h2>
       <div className='relative w-fit'>
@@ -183,38 +182,38 @@ const Timer: React.FC = () => {
           hideValue
         />
 
-        <div className='absolute z-10 w-3/4 text-4xl font-semibold text-center text-gray-600 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 dark:text-gray-400'>
+        <div className='absolute z-10 w-3/4 text-4xl font-semibold text-center -translate-x-1/2 -translate-y-1/2 text-base-content/80 top-1/2 left-1/2'>
           <p className='mb-1'>
             {minutesText}:{secondsText}
           </p>
-          <p className='flex items-center justify-center gap-1 mt-1 text-lg tracking-wider capitalize dark:text-gray-500'>
+          <p className='flex items-center justify-center gap-1 mt-1 text-lg tracking-wider capitalize'>
             <span>{sessionsIcons[timeState]}</span>
             <span>{timeState == 'longBreak' ? 'long break' : timeState}</span>
           </p>
         </div>
       </div>
-      <div className='flex items-center justify-center gap-x-4'>
-        <BasicButton
-          className='mt-6 border-2 border-gray-500 rounded-full'
+      <div className='flex items-center justify-center mt-6 gap-x-4'>
+        <button
+          className='flex items-center justify-center border-2 btn-lg border-base-content/75 btn-circle btn-ghost'
           onClick={resetTimer}
         >
           <IconRotateClockwise size={35} />
-        </BasicButton>
+        </button>
 
         {isPaused ? (
-          <BasicButton
-            className='mt-6 border-2 border-gray-500 rounded-full'
+          <button
+            className='flex items-center justify-center border-2 btn-lg border-base-content/75 btn-ghost btn-circle'
             onClick={unPauseTimer}
           >
             <IconPlayerPlayFilled size={35} />
-          </BasicButton>
+          </button>
         ) : (
-          <BasicButton
-            className='mt-6 border-2 border-gray-500 rounded-full'
+          <button
+            className='flex items-center justify-center border-2 btn-lg border-base-content/75 btn-ghost btn-circle'
             onClick={pauseTimer}
           >
             <IconPlayerPauseFilled size={35} />
-          </BasicButton>
+          </button>
         )}
       </div>
     </>

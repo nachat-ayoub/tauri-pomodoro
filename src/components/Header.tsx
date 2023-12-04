@@ -1,50 +1,54 @@
-import { IconBrandGithub, IconChevronDown } from '@tabler/icons-react';
-import { DarkThemeToggle, Dropdown } from 'flowbite-react';
+import {
+  IconBrandGithub,
+  IconChevronDown,
+  IconMenu,
+  IconMenu2,
+} from '@tabler/icons-react';
+import ThemeSwitcher from './ThemeSwitcher';
 import useStore from '../hooks/useStore';
-import BasicButton from './BasicButton';
 import React from 'react';
 
 const Header: React.FC = () => {
   const { selectedProfile, selectProfile, profiles } = useStore();
 
   return (
-    <header className='flex justify-between gap-x-3'>
-      <div className=''>
-        <Dropdown
-          label=''
-          placement='bottom-start'
-          renderTrigger={() => (
-            <div className=''>
-              <BasicButton className='flex items-center justify-center font-semibold gap-x-2'>
-                <span> {selectedProfile.profileName} </span>
-                <IconChevronDown size={20} strokeWidth={2.5} />
-              </BasicButton>
-            </div>
-          )}
+    <header className='flex justify-between w-full gap-x-3'>
+      <div className='flex items-center gap-x-3'>
+        <label
+          htmlFor='sidebar'
+          className='btn btn-ghost drawer-button lg:hidden'
         >
-          {profiles.map((prof) => (
-            <Dropdown.Item
-              className={
-                'border-l-4 ' +
-                (prof.profileName === selectedProfile.profileName
-                  ? 'border-gray-400'
-                  : 'border-transparent')
-              }
-              onClick={() => selectProfile(prof.profileName)}
-              key={prof.profileName}
-            >
-              {prof.profileName}
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
+          <IconMenu2 size={20} />
+        </label>
+
+        <details className='dropdown'>
+          <summary className='flex items-center justify-center m-1 font-semibold btn gap-x-2'>
+            <span> {selectedProfile.profileName} </span>
+            <IconChevronDown size={20} strokeWidth={2.5} />
+          </summary>
+          <ul className='bg-base-200 shadow menu dropdown-content z-[1] rounded-box min-w-[10rem] max-w-fit w-52'>
+            {profiles.map((prof) => (
+              <li
+                onClick={() => selectProfile(prof.profileName)}
+                key={prof.profileName}
+              >
+                <a href='#'>{prof.profileName}</a>
+              </li>
+            ))}
+          </ul>
+        </details>
       </div>
 
-      <div className='flex gap-x-3'>
-        <BasicButton>
+      <div className='flex items-center gap-x-3'>
+        <a
+          className='btn btn-ghost'
+          target='_blank'
+          href='https://github.com/nachat-ayoub/tauri-pomodoro'
+        >
           <IconBrandGithub size={20} />
-        </BasicButton>
+        </a>
 
-        <DarkThemeToggle />
+        <ThemeSwitcher />
       </div>
     </header>
   );

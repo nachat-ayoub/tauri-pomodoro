@@ -1,9 +1,6 @@
-import { DarkThemeToggle, Sidebar } from 'flowbite-react';
-import { IconBrandGithub, IconHome, IconSettings } from '@tabler/icons-react';
-import Logo from '../components/Logo';
-import { IconBrandGithubFilled } from '@tabler/icons-react';
-import BasicButton from '../components/BasicButton';
+import { IconHome, IconSettings } from '@tabler/icons-react';
 import Header from '../components/Header';
+import Logo from '../components/Logo';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -16,32 +13,45 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   return (
     <main className='flex w-full dark:text-gray-50'>
-      <Sidebar className='w-48 h-screen'>
-        <div className='flex flex-col w-full h-full gap-y-6'>
-          <div className='my-2'>
-            <Logo />
-          </div>
-          <Sidebar.Items className='flex flex-col justify-between flex-grow'>
-            {/*//* ----------------------- Top Section ----------------------- */}
-            <Sidebar.ItemGroup>
-              <Sidebar.Item href='#' icon={IconHome}>
-                Home
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-            {/*//* ----------------------- Bottom Section ----------------------- */}
-            <Sidebar.ItemGroup>
-              <Sidebar.Item href='#' icon={IconSettings}>
-                Settings
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-            {/*  */}
-          </Sidebar.Items>
+      <div className='drawer lg:drawer-open'>
+        <input id='sidebar' type='checkbox' className='drawer-toggle' />
+        <div className='flex flex-col items-center justify-center px-6 py-4 drawer-content'>
+          <Header />
+          <div className={containerClassName}>{children}</div>
         </div>
-      </Sidebar>
-      <section className='flex flex-col w-full px-6 py-4 bg-slate-200 dark:bg-slate-900'>
-        <Header />
-        <div className={containerClassName}>{children}</div>
-      </section>
+
+        <div className='drawer-side z-[100]'>
+          <label
+            htmlFor='sidebar'
+            aria-label='close sidebar'
+            className='drawer-overlay'
+          ></label>
+          <div className='min-h-full p-4 menu w-80 bg-base-200 gap-y-6 text-base-content'>
+            {/* Sidebar content here */}
+            <div className='my-2 cursor-default'>
+              <Logo />
+            </div>
+
+            <ol className='flex flex-col justify-between flex-grow'>
+              <li>
+                <a className='' href={'#Home'}>
+                  <IconHome />
+                  Home
+                </a>
+              </li>
+
+              <li>
+                <a href={'#Settings'}>
+                  <span>
+                    <IconSettings />
+                  </span>
+                  Settings
+                </a>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
     </main>
   );
 };

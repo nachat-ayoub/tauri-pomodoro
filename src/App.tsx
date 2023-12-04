@@ -1,8 +1,8 @@
 import { Settings, defaultSettings, initSettings } from './utils/settings';
+import useStore from './hooks/useStore';
 import Timer from './components/Timer';
 import Layout from './Layouts/Layout';
 import { useEffect } from 'react';
-import useStore from './hooks/useStore';
 
 const App = () => {
   const { setProfiles, selectProfile } = useStore();
@@ -23,7 +23,7 @@ const App = () => {
   }, []);
 
   return (
-    <Layout containerClassName='flex-grow flex flex-col justify-center items-center text-gray-900 dark:text-gray-50'>
+    <Layout containerClassName='flex-grow flex flex-col justify-center items-center '>
       <h2 className='mb-2 text-4xl font-semibold'>Tauri Pomodoro</h2>
       <Timer />
     </Layout>
