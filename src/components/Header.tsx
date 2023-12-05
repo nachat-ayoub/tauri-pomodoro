@@ -1,12 +1,12 @@
 import {
   IconBrandGithub,
   IconChevronDown,
-  IconMenu,
   IconMenu2,
 } from '@tabler/icons-react';
 import ThemeSwitcher from './ThemeSwitcher';
 import useStore from '../hooks/useStore';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { selectedProfile, selectProfile, profiles } = useStore();
@@ -40,13 +40,13 @@ const Header: React.FC = () => {
       </div>
 
       <div className='flex items-center gap-x-3'>
-        <a
+        <Link
           className='btn btn-ghost'
           target='_blank'
-          href='https://github.com/nachat-ayoub/tauri-pomodoro'
+          to='https://github.com/nachat-ayoub/tauri-pomodoro'
         >
           <IconBrandGithub size={20} />
-        </a>
+        </Link>
 
         <ThemeSwitcher />
       </div>

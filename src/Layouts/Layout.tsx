@@ -1,6 +1,8 @@
 import { IconHome, IconSettings } from '@tabler/icons-react';
 import Header from '../components/Header';
 import Logo from '../components/Logo';
+import { Link } from 'react-router-dom';
+import MyLink from '../components/MyLink';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -34,19 +36,19 @@ const Layout: React.FC<LayoutProps> = ({
 
             <ol className='flex flex-col justify-between flex-grow'>
               <li>
-                <a className='' href={'#Home'}>
+                <MyLink to={'/'}>
                   <IconHome />
                   Home
-                </a>
+                </MyLink>
               </li>
 
               <li>
-                <a href={'#Settings'}>
+                <MyLink to={'/Settings'}>
                   <span>
                     <IconSettings />
                   </span>
                   Settings
-                </a>
+                </MyLink>
               </li>
             </ol>
           </div>

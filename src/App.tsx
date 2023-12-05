@@ -1,8 +1,9 @@
 import { Settings, defaultSettings, initSettings } from './utils/settings';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import useStore from './hooks/useStore';
-import Timer from './components/Timer';
-import Layout from './Layouts/Layout';
 import { useEffect } from 'react';
+import HomePage from './pages/Home';
+import SettingsPage from './pages/Settings';
 
 const App = () => {
   const { setProfiles, selectProfile } = useStore();
@@ -22,12 +23,24 @@ const App = () => {
     })();
   }, []);
 
-  return (
-    <Layout containerClassName='flex-grow flex flex-col justify-center items-center '>
-      <h2 className='mb-2 text-4xl font-semibold'>Tauri Pomodoro</h2>
-      <Timer />
-    </Layout>
-  );
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <HomePage />,
+      // errorElement: (
+      //   <h3 className='text-lg font-semibold'> Oops Something Went Wrong! </h3>
+      // ),
+    },
+    {
+      path: '/settings',
+      element: <SettingsPage />,
+      // errorElement: (
+      //   <h3 className='text-lg font-semibold'> Oops Something Went Wrong! </h3>
+      // ),
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
 };
 
 export default App;
