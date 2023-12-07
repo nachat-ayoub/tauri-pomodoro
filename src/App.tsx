@@ -6,7 +6,7 @@ import HomePage from './pages/Home';
 import SettingsPage from './pages/Settings';
 
 const App = () => {
-  const { setProfiles, selectProfile } = useStore();
+  const { profiles, setProfiles, selectProfile } = useStore();
 
   useEffect(() => {
     (async () => {
@@ -33,7 +33,7 @@ const App = () => {
     },
     {
       path: '/settings',
-      element: <SettingsPage />,
+      element: <SettingsPage profiles={profiles} />,
       // errorElement: (
       //   <h3 className='text-lg font-semibold'> Oops Something Went Wrong! </h3>
       // ),

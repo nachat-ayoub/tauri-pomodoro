@@ -9,7 +9,8 @@
 }
 
 @layer components {
-  nav[aria-label='Sidebar'] > div {
-    @apply rounded-none;
+  input,
+  textarea {
+    @apply placeholder:text-neutral-500;
   }
 }

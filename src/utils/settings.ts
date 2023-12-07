@@ -12,7 +12,7 @@ import { Profile } from '../hooks/useStore';
 //
 
 interface Settings {
-  find: (selector: Partial<Profile>) => Promise<Profile[]>;
+  find: (selector?: Partial<Profile>) => Promise<Profile[]>;
   findOne: (data: Profile[], selector: Partial<Profile>) => Profile | undefined;
   update: (
     selector: Partial<Profile>,
@@ -29,8 +29,12 @@ const Settings: Settings = (() => {
     return data;
   };
 
-  const find = async (selector: Partial<Profile>): Promise<Profile[]> => {
+  const find = async (selector?: Partial<Profile>): Promise<Profile[]> => {
     await getUpdatedData();
+    if (selector == undefined) {
+      return data;
+    }
+
     return data.filter((profile) => {
       for (const key in selector) {
         if (

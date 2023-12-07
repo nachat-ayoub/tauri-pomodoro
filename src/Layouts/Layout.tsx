@@ -1,8 +1,7 @@
 import { IconHome, IconSettings } from '@tabler/icons-react';
 import Header from '../components/Header';
-import Logo from '../components/Logo';
-import { Link } from 'react-router-dom';
 import MyLink from '../components/MyLink';
+import Logo from '../components/Logo';
 
 type LayoutProps = {
   children: React.ReactNode;
